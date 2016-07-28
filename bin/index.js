@@ -18,7 +18,8 @@ var tildify = require('tildify');
 var argv = require('minimist')(process.argv.slice(2));
 
 var cli = new Liftoff({
-  name: 'pinion',
+  name: 'pinion-pipeline',
+  configName: 'pinionfile',
   extensions: {
     '.js': null,
     '.json': null
