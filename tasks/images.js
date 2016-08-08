@@ -12,8 +12,18 @@ var imagemin = require('../lib/gulpImagemin');
 module.exports = function(config) {
   if(!config.tasks.images) return;
 
+  var relativePath = config.tasks.images.src;
+  if(Array.isArray(config.tasks.images.src)) {
+    relativePath = '{' + relativePath.join(',') + '}';
+  }
+
   var paths = {
-    src: path.join(config.root.src, config.tasks.images.src, '/**'),
+    src: [
+      path.join(config.root.src, relativePath, '/**'),
+
+      // Search for images in the package's node_modules too
+      path.join(process.cwd(), 'node_modules', relativePath, '/**')
+    ],
     dest: path.join(config.root.dest, config.tasks.images.dest)
   };
 
