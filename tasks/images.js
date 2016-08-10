@@ -14,7 +14,7 @@ module.exports = function(config) {
 
   var relativePathArr = config.tasks.images.src;
   if(!Array.isArray(relativePathArr)) {
-    relativePathArr = [relativePathArr]
+    relativePathArr = [relativePathArr];
   }
 
   var imagesSrc = relativePathArr.reduceRight(function(soFar, relativePath) {
@@ -28,7 +28,7 @@ module.exports = function(config) {
       npmImagePath
     ];
 
-    return imagePathArr.concat(soFar)
+    return imagePathArr.concat(soFar);
   });
 
   var paths = {
