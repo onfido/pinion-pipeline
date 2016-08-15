@@ -129,7 +129,7 @@ Minifies images in production mode
 
 #### Options
 
- * `src`
+ * `src` - can take an array, and handle `node_modules` paths. `src: ['x', 'y']` for example, translates to `['root/x', 'node_modules/x', 'root/y', 'node_modules/y']` (where earlier paths takes priority)
  * `dest`
 
 ### svg

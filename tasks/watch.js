@@ -17,7 +17,8 @@ module.exports = function(config) {
     watchableTasks.forEach(function(taskName) {
       var task = config.tasks[taskName];
       if(task) {
-        var glob = path.join(config.root.src, task.src, '**/*');
+        var taskSrc = Array.isArray(task.src) ? '{' + task.src.join(',') + '}' : task.src;
+        var glob = path.join(config.root.src, taskSrc, '**/*');
         watch(glob, { usePolling: true }, function() {
           gulp.start(taskName);
         });
