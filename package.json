@@ -1,7 +1,7 @@
 {
   "name": "pinion-pipeline",
   "description": "An opinionated pipeline, modelled after the Rails asset pipeline. Designed for the benefits of speed, and access to CommonJS modules",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "./index.js",
   "bin": {
     "pinion": "./bin/index.js"
