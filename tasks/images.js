@@ -18,6 +18,7 @@ module.exports = function(config) {
   }
 
   var imagesSrc = relativePathArr.reduceRight(function(soFar, relativePath) {
+    console.warn(soFar, relativePath);
     var rootImagePath = path.join(config.root.src, relativePath, '/**');
     // Search for images in the package's node_modules too
     var npmImagePath = path.join(process.cwd(), 'node_modules', relativePath, '/**');
@@ -29,7 +30,7 @@ module.exports = function(config) {
     ];
 
     return imagePathArr.concat(soFar);
-  });
+  }, []);
 
   var paths = {
     src: imagesSrc,
