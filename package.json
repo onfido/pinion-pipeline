@@ -1,7 +1,7 @@
 {
   "name": "pinion-pipeline",
   "description": "An opinionated pipeline, modelled after the Rails asset pipeline. Designed for the benefits of speed, and access to CommonJS modules",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "main": "./index.js",
   "bin": {
     "pinion": "./bin/index.js"
@@ -11,6 +11,10 @@
   },
   "enginesStrict": {
     "node": ">=0.12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onfido/pinion-pipeline.git"
   },
   "dependencies": {
     "babel-core": "^6.9.0",

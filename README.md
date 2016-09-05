@@ -1,7 +1,7 @@
 # What is pinion?
- * **Opinionated** --- modeled to mimic the rails asset pipeline, tasks are default to just work
- * **Fast** --- designed for speed
- * **Customisable** --- the `pinionfile` allows tweaking of the pipeline to match your workspace
+ * **Opinionated** - modeled to mimic the rails asset pipeline, tasks are default to just work
+ * **Fast** - designed for speed
+ * **Customisable** - the `pinionfile` allows tweaking of the pipeline to match your workspace
 
 pinion was born to replace the Rails asset pipeline, in a Rails workspace. Benefits over the Rails asset pipeline include:
 
@@ -26,7 +26,7 @@ pinion's CLI is designed to mimic gulp.
 # Sample `pinionfile.js`
 
 ```js
-return {
+module.exports = {
   root: {
     src: './app/assets',
     dest: './public/assets'
