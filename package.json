@@ -47,6 +47,7 @@
     "gulp-watch": "^4.3.5",
     "json-loader": "^0.5.4",
     "liftoff": "^2.2.1",
+    "merge-stream": "^1.0.0",
     "minimist": "^1.2.0",
     "npm-sass": "^1.2.0",
     "require-dir": "^0.3.0",

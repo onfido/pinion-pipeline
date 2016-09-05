@@ -147,7 +147,29 @@ Moves fonts from src to dest
 
 ### resources
 
-Moves miscellaneous resources from src to dest
+Moves miscellaneous resources from src to dest. It can accept an array of src/dest objects
+
+#### Options
+
+ * `src`
+ * `dest`
+ * `fileGlob` - the glob to search for files under the `src` directory (`**` by default)
+
+#### Example
+
+```json
+"resources": [
+  {
+    "src": "config",
+    "dest": "config"
+  },
+  {
+    "src": "pdfs",
+    "fileGlob": "**/*.pdf",
+    "dest": "."
+  }
+]
+```
 
 ## Tasks
 

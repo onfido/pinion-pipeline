@@ -15,11 +15,18 @@ module.exports = function(config) {
     var watchableTasks = ['fonts', 'images', 'svgSprite', 'resources', 'html', 'css'];
 
     watchableTasks.forEach(function(taskName) {
-      var task = config.tasks[taskName];
-      if(task) {
-        var taskSrc = Array.isArray(task.src) ? '{' + task.src.join(',') + '}' : task.src;
-        var glob = path.join(config.root.src, taskSrc, '**/*');
-        watch(glob, { usePolling: true }, function() {
+      var taskList = config.tasks[taskName];
+      if(taskList) {
+        if(!Array.isArray(taskList)) {
+          taskList = [taskList];
+        }
+
+        var globList = taskList.map(function(task) {
+          var taskSrc = Array.isArray(task.src) ? '{' + task.src.join(',') + '}' : task.src;
+          return path.join(config.root.src, taskSrc, '**/*');
+        });
+
+        watch(globList, { usePolling: true }, function() {
           gulp.start(taskName);
         });
       }
