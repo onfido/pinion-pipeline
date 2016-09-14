@@ -3,25 +3,28 @@
 var changed = require('gulp-changed');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var path = require('path');
 var debug = require('../lib/gulpDebug');
+var cookTask = require('../lib/cookTask');
+var cookTaskConfig = require('../lib/cookTaskConfig');
 
 module.exports = function(config) {
-  if(!config.tasks.fonts) return;
+  var rawTaskConfig = config.tasks.fonts;
+  if(!rawTaskConfig) return;
 
-  var paths = {
-    src: path.join(config.root.src, config.tasks.fonts.src, '/**/*'),
-    dest: path.join(config.root.dest, config.tasks.fonts.dest)
+  var defaultTaskConfig = {
+    src: '.',
+    dest: '.'
   };
+  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var fontsTask = function() {
-    gutil.log('Building fonts from ' + JSON.stringify(paths.src));
+  var rawTask = function(options) {
+    gutil.log('Building fonts from ' + JSON.stringify(options.src));
 
-    return gulp.src(paths.src)
+    return gulp.src(options.src)
       .pipe(debug({ title: 'fonts' }))
-      .pipe(changed(paths.dest)) // Ignore unchanged files
-      .pipe(gulp.dest(paths.dest));
+      .pipe(changed(options.dest)) // Ignore unchanged files
+      .pipe(gulp.dest(options.dest));
   };
 
-  gulp.task('fonts', fontsTask);
+  gulp.task('fonts', cookTask(rawTask, config.root, taskConfig));
 };
