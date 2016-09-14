@@ -2,57 +2,73 @@
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var webpack = require('webpack');
+var PassThrough = require('readable-stream/passthrough');
 var env = require('../lib/env');
 var logger = require('../lib/compileLogger');
-var webpack = require('webpack');
+var cookTask = require('../lib/cookTask');
+var cookTaskConfig = require('../lib/cookTaskConfig');
 
 module.exports = function(config) {
-  if(!config.tasks.js) return;
+  var rawTaskConfig = config.tasks.js;
+  if(!rawTaskConfig) return;
 
-  var wpconfig = require('../lib/webpackBaseConfig')(config);
+  var defaultTaskConfig = {
+    src: '.',
+    dest: '.'
+  };
+  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  if(env.isDevelopment()) {
-    wpconfig.devtool = 'source-map';
-    webpack.debug = true;
-  }
+  var rawTask = function(watch, options) {
+    var wpconfig = require('../lib/webpackBaseConfig')(taskConfig, config.root);
 
-  if(env.isProduction()) {
-    wpconfig.plugins.push(
-      new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.UglifyJsPlugin(),
-      new webpack.NoErrorsPlugin()
-    );
-  }
+    if(env.isDevelopment()) {
+      wpconfig.devtool = 'source-map';
+      webpack.debug = true;
+    }
 
-  var webpackTask = function(watch) {
-    return function(callback) {
-      var initialCompile = false;
-      var onCompile = function(err, stats) {
-        logger(err, stats);
+    if(env.isProduction()) {
+      wpconfig.plugins.push(
+        new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.NoErrorsPlugin()
+      );
+    }
 
-        if(!initialCompile) {
-          initialCompile = true;
-          callback();
-        }
-      };
+    var wpStream = new PassThrough();
 
-      if(watch) {
-        gutil.log('Kicking off webpack in watch-mode');
+    var initialCompile = false;
+    var onCompile = function(err, stats) {
+      logger(err, stats);
 
-        var watchOptions = {
-          poll: true
-        };
-
-        webpack(wpconfig).watch(watchOptions, onCompile);
-      }
-      else {
-        gutil.log('Kicking off webpack in build-mode');
-
-        webpack(wpconfig, onCompile);
+      if(!initialCompile) {
+        initialCompile = true;
+        wpStream.end();
       }
     };
+
+    if(watch) {
+      gutil.log('Kicking off webpack in watch-mode');
+
+      var watchOptions = {
+        poll: true
+      };
+
+      webpack(wpconfig).watch(watchOptions, onCompile);
+    }
+    else {
+      gutil.log('Kicking off webpack in build-mode');
+
+      webpack(wpconfig, onCompile);
+    }
+
+    return wpStream;
   };
 
-  gulp.task('webpack', webpackTask(false));
-  gulp.task('webpack:watch', webpackTask(true));
+  var cookWebpackTask = function(watch) {
+    return cookTask(rawTask.bind(rawTask, false), config.root, taskConfig);
+  };
+
+  gulp.task('webpack', cookWebpackTask(false));
+  gulp.task('webpack:watch', cookWebpackTask(true));
 };
