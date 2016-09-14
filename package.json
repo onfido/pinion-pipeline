@@ -50,6 +50,7 @@
     "merge-stream": "^1.0.0",
     "minimist": "^1.2.0",
     "npm-sass": "^1.2.0",
+    "object-assign": "^4.1.0",
     "require-dir": "^0.3.0",
     "script-loader": "^0.7.0",
     "semver": "^5.1.0",

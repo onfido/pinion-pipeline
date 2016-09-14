@@ -3,39 +3,30 @@
 var changed = require('gulp-changed');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var path = require('path');
-var merge = require('merge-stream');
+var objectAssign = require('object-assign');
 var debug = require('../lib/gulpDebug');
+var cookTask = require('../lib/cookTask');
+var cookTaskConfig = require('../lib/cookTaskConfig');
 
 module.exports = function(config) {
-  var resources = config.tasks.resources;
-  if(!resources) return;
+  var rawTaskConfig = config.tasks.resources;
+  if(!rawTaskConfig) return;
 
-  if(!Array.isArray(resources)) {
-    resources = [resources];
-  }
+  var defaultTaskConfig = {
+    src: '.',
+    dest: '.',
+    glob: '**'
+  };
+  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var pathsList = resources.map(function(res) {
-    return {
-      src: path.join(config.root.src, res.src, res.glob || '**'),
-      dest: path.join(config.root.dest, res.dest)
-    };
-  });
+  var rawTask = function(options) {
+    gutil.log('Building resources from ' + options.src);
 
-  var resourcesTask = function() {
-    gutil.log('Building resources from ' + JSON.stringify(pathsList.map(function(paths) {
-      return paths.src;
-    })));
-
-    var streams = pathsList.map(function(paths) {
-      return gulp.src(paths.src)
-        .pipe(debug({ title: 'resources' }))
-        .pipe(changed(paths.dest)) // Ignore unchanged files
-        .pipe(gulp.dest(paths.dest));
-    });
-
-    return merge.apply(merge, streams);
+    return gulp.src(options.src)
+      .pipe(debug({ title: 'resources' }))
+      .pipe(changed(options.dest)) // Ignore unchanged files
+      .pipe(gulp.dest(options.dest));
   };
 
-  gulp.task('resources', resourcesTask);
+  gulp.task('resources', cookTask(rawTask, config.root, taskConfig));
 };
