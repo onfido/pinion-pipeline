@@ -1,7 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
-var path = require('path');
+var gutil = require('gulp-util');
 var watch = require('gulp-watch');
 var merge = require('merge-stream');
 var env = require('../lib/env');
@@ -29,7 +29,7 @@ module.exports = function(config) {
           throw new Error('Cannot run the `watch` task in production mode!');
         }
 
-        console.log('Watching ' + JSON.stringify(options.src) + ' to trigger ' + taskName);
+        gutil.log('Watching ' + JSON.stringify(options.src) + ' to trigger ' + taskName);
         return watch(options.src, { usePolling: true }, function() {
           gulp.start(taskName);
         });

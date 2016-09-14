@@ -1,7 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var gutil = require('gulp-util');
 var gulpSequence = require('gulp-sequence');
 
 module.exports = function(config) {

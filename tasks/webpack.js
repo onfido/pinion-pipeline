@@ -20,7 +20,7 @@ module.exports = function(config) {
 
   var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var rawTask = function(watch, options) {
+  var rawTask = function(watch) {
     var wpconfig = require('../lib/webpackBaseConfig')(taskConfig, config.root);
 
     if(env.isDevelopment()) {

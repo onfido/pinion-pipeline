@@ -3,7 +3,6 @@
 var changed = require('gulp-changed');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var path = require('path');
 var env = require('../lib/env');
 var gulpIf = require('../lib/gulpIf');
 var debug = require('../lib/gulpDebug');

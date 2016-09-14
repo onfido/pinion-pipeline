@@ -3,7 +3,6 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var svgstore = require('gulp-svgstore');
-var path = require('path');
 var env = require('../lib/env');
 var debug = require('../lib/gulpDebug');
 var gulpIf = require('../lib/gulpIf');
