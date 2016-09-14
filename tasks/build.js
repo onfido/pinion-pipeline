@@ -13,12 +13,12 @@ module.exports = function(config) {
     'resources'
   ];
   var codeTasks = [
-      'css',
-      {
-        configName: 'js',
-        default: 'webpack',
-        watch: 'webpack:watch'
-      }
+    'css',
+    {
+      configName: 'js',
+      default: 'webpack',
+      watch: 'webpack:watch'
+    }
   ];
 
   var applyUnboundVariant = function(variant, task) {
