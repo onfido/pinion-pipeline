@@ -77,7 +77,11 @@ module.exports = {
 
     // images are minified
     images: {
-      src: 'images',
+      // split the images task into mutliple sub-tasks
+      taskArray: [
+        { src: 'images' },
+        { src: 'vendor/images' },
+      ],
       dest: '.'
     }
 
@@ -94,9 +98,20 @@ Depending on the `NODE_ENV`, tasks perform differently. As a rule of thumb:
 
 # Tasks
 
-## Tasks configuration
+## Configurable tasks
 
 Tasks with omitted configuration in the `pinionfile.js` will be omitted from the build sequence
+
+All tasks accept the following arguments
+
+### Base options
+
+ * `src` - the source directory (or an array of directories)
+ * `dest` - the destination directory
+ * `fileGlob` - a glob pattern to search for files within `src`
+ * `extensions` - an array of file extensions (equivalent to `fileGlob: '**/*.{a,b,c}'`)
+ * `ignore` - a glob pattern of paths to be ignored
+ * `npm` - whether `node_modules` should be searched as well as `src`
 
 ### js
 
@@ -104,12 +119,9 @@ Uses webpack to compile Javascript code
 
 #### Options
 
- * `src` - the source directory
- * `dest` - the destination directory
  * `extractSharedJs` - create a shared.js file with common code shared between multiple entries
  * `entries` - a map of built file names, to an array of source files. E.g. `{ bundle: ['./a.js', './b.js'] }` to create a bundle.js from an a.js and b.js
  * `globals` - a map of local npm packages to their aliases. E.g. `jquery: ['$', 'jQuery']`
- * `extensions` - valid JS file extensions
 
 ### css
 
@@ -117,29 +129,16 @@ Uses node-sass to compile SCSS code
 
 #### Options
 
- * `src`
- * `dest`
  * `autoprefixer` - options passed to gulp-autoprefixer
  * `sass` - options passed to gulp-sass
- * `extensions` - valid CSS file extensions
 
 ### images
 
 Minifies images in production mode
 
-#### Options
-
- * `src` - can take an array, and handle `node_modules` paths. `src: ['x', 'y']` for example, translates to `['root/x', 'node_modules/x', 'root/y', 'node_modules/y']` (where earlier paths takes priority)
- * `dest`
-
 ### svg
 
 Uses gulp-svgstore to combine all SVGs into a `sprite.svg` file
-
-#### Options
-
- * `src`
- * `dest`
 
 ### fonts
 
@@ -149,29 +148,49 @@ Moves fonts from src to dest
 
 Moves miscellaneous resources from src to dest. It can accept an array of src/dest objects
 
-#### Options
+## Task splitting
 
- * `src`
- * `dest`
- * `fileGlob` - the glob to search for files under the `src` directory (`**` by default)
+Tasks can be split into multiple sub tasks, as in the following example
 
-#### Example
-
-```json
-"resources": [
-  {
-    "src": "config",
-    "dest": "config"
-  },
-  {
-    "src": "pdfs",
-    "fileGlob": "**/*.pdf",
-    "dest": "."
-  }
-]
+```js
+resources: {
+  npm: true,
+  taskArray: [
+    {
+      src: 'config',
+      dest: 'config'
+    },
+    {
+      src: 'pdfs',
+      fileGlob: '**/*.pdf',
+      dest: '.'
+    }
+  ]
+}
 ```
 
-## Tasks
+Where the resources task will be run twice, with equivalent configs of
+
+```js
+{
+  npm: true,
+  src: 'config',
+  dest: 'config'
+}
+```
+
+and
+
+```js
+{
+  npm: true,
+  src: 'pdfs',
+  fileGlob: '**/*.pdf',
+  dest: '.'
+}
+```
+
+## Non-configurable tasks
 
 ### default
 
