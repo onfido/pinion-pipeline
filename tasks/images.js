@@ -11,15 +11,16 @@ var imagemin = require('../lib/gulpImagemin');
 var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.',
+  npm: true
+};
+
 module.exports = function(config) {
   var rawTaskConfig = config.tasks.images;
   if(!rawTaskConfig) return;
 
-  var defaultTaskConfig = {
-    src: '.',
-    dest: '.',
-    npm: true
-  };
   var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   var rawTask = function(options) {
@@ -34,3 +35,5 @@ module.exports = function(config) {
 
   gulp.task('images', cookTask(rawTask, config.root, taskConfig));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;

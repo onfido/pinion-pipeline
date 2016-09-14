@@ -9,14 +9,15 @@ var logger = require('../lib/compileLogger');
 var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.'
+};
+
 module.exports = function(config) {
   var rawTaskConfig = config.tasks.js;
   if(!rawTaskConfig) return;
 
-  var defaultTaskConfig = {
-    src: '.',
-    dest: '.'
-  };
   var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   var rawTask = function(watch, options) {
@@ -66,9 +67,11 @@ module.exports = function(config) {
   };
 
   var cookWebpackTask = function(watch) {
-    return cookTask(rawTask.bind(rawTask, false), config.root, taskConfig);
+    return cookTask(rawTask.bind(rawTask, watch), config.root, taskConfig);
   };
 
   gulp.task('webpack', cookWebpackTask(false));
   gulp.task('webpack:watch', cookWebpackTask(true));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;

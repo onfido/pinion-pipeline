@@ -7,14 +7,15 @@ var debug = require('../lib/gulpDebug');
 var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.'
+};
+
 module.exports = function(config) {
   var rawTaskConfig = config.tasks.fonts;
   if(!rawTaskConfig) return;
 
-  var defaultTaskConfig = {
-    src: '.',
-    dest: '.'
-  };
   var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   var rawTask = function(options) {
@@ -28,3 +29,5 @@ module.exports = function(config) {
 
   gulp.task('fonts', cookTask(rawTask, config.root, taskConfig));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;

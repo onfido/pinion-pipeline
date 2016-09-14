@@ -11,15 +11,16 @@ var imagemin = require('../lib/gulpImagemin');
 var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.',
+  extensions: ['svg']
+};
+
 module.exports = function(config) {
   var rawTaskConfig = config.tasks.svgSprite;
   if(!rawTaskConfig) return;
 
-  var defaultTaskConfig = {
-    src: '.',
-    dest: '.',
-    extensions: ['svg']
-  };
   var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   var rawTask = function(options) {
@@ -34,3 +35,5 @@ module.exports = function(config) {
 
   gulp.task('svgSprite', cookTask(rawTask, config.root, taskConfig));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;

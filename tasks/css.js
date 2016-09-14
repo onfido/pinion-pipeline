@@ -14,15 +14,16 @@ var debug = require('../lib/gulpDebug');
 var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.',
+  extensions: ['css', 'scss']
+};
+
 module.exports = function(config) {
   var rawTaskConfig = config.tasks.css;
   if(!rawTaskConfig) return;
 
-  var defaultTaskConfig = {
-    src: '.',
-    dest: '.',
-    extensions: ['css', 'scss']
-  };
   var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   var rawTask = function (options) {
@@ -45,3 +46,5 @@ module.exports = function(config) {
 
   gulp.task('css', cookTask(rawTask, config.root, taskConfig));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;
