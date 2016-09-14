@@ -3,7 +3,6 @@
 var changed = require('gulp-changed');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var objectAssign = require('object-assign');
 var debug = require('../lib/gulpDebug');
 var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
@@ -14,13 +13,12 @@ module.exports = function(config) {
 
   var defaultTaskConfig = {
     src: '.',
-    dest: '.',
-    glob: '**'
+    dest: '.'
   };
   var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   var rawTask = function(options) {
-    gutil.log('Building resources from ' + options.src);
+    gutil.log('Building resources from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)
       .pipe(debug({ title: 'resources' }))
