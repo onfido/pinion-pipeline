@@ -6,7 +6,7 @@ var gulpSequence = require('gulp-sequence');
 var env = require('../lib/env');
 
 module.exports = function() {
-  var productionTask = function() {
+  var productionTask = function(cb) {
     if(!env.isProduction()) {
       gutil.log(
         gutil.colors.red('WARNING!'),
@@ -14,7 +14,7 @@ module.exports = function() {
       );
     }
 
-    return gulpSequence('clean', 'build', 'rev');
+    gulpSequence('clean', 'build', 'rev', cb);
   };
 
   gulp.task('production', productionTask);
