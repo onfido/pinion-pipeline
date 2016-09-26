@@ -1,29 +1,44 @@
 'use strict';
 
 var gulp = require('gulp');
-var path = require('path');
+var gutil = require('gulp-util');
+var watch = require('gulp-watch');
+var merge = require('merge-stream');
 var env = require('../lib/env');
+var cookTask = require('../lib/cookTask');
+var cookTaskConfig = require('../lib/cookTaskConfig');
+
+var nonEmptyFilter = function(item) {
+  return Boolean(item);
+};
 
 module.exports = function(config) {
+  var watchableTasks = ['fonts', 'images', 'svgSprite', 'resources', 'css'];
+
   var watchTask = function() {
-    if(env.isProduction()) {
-      throw new Error('Cannot run the `watch` task in production mode!');
-    }
+    var watchStreams = watchableTasks.map(function(taskName) {
+      var rawTaskConfig = config.tasks[taskName];
+      if(!rawTaskConfig) return;
 
-    var watch = require('gulp-watch');
+      var defaultTaskConfig = require('./' + taskName).defaultTaskConfig;
 
-    var watchableTasks = ['fonts', 'images', 'svgSprite', 'resources', 'html', 'css'];
+      var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-    watchableTasks.forEach(function(taskName) {
-      var task = config.tasks[taskName];
-      if(task) {
-        var taskSrc = Array.isArray(task.src) ? '{' + task.src.join(',') + '}' : task.src;
-        var glob = path.join(config.root.src, taskSrc, '**/*');
-        watch(glob, { usePolling: true }, function() {
+      var rawTask = function(options) {
+        if(env.isProduction()) {
+          throw new Error('Cannot run the `watch` task in production mode!');
+        }
+
+        gutil.log('Watching ' + JSON.stringify(options.src) + ' to trigger ' + taskName);
+        return watch(options.src, { usePolling: true }, function() {
           gulp.start(taskName);
         });
-      }
+      };
+
+      return cookTask(rawTask, config.root, taskConfig)();
     });
+
+    return merge.apply(merge, watchStreams.filter(nonEmptyFilter));
   };
 
   gulp.task('watch', ['build:watch'], watchTask);

@@ -1,7 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var gutil = require('gulp-util');
 var gulpSequence = require('gulp-sequence');
 
 module.exports = function(config) {
@@ -13,12 +12,12 @@ module.exports = function(config) {
     'resources'
   ];
   var codeTasks = [
-      'css',
-      {
-        configName: 'js',
-        default: 'webpack',
-        watch: 'webpack:watch'
-      }
+    'css',
+    {
+      configName: 'js',
+      default: 'webpack',
+      watch: 'webpack:watch'
+    }
   ];
 
   var applyUnboundVariant = function(variant, task) {

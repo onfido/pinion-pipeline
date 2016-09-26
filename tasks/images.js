@@ -3,48 +3,36 @@
 var changed = require('gulp-changed');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var path = require('path');
 var env = require('../lib/env');
 var gulpIf = require('../lib/gulpIf');
 var debug = require('../lib/gulpDebug');
 var imagemin = require('../lib/gulpImagemin');
+var cookTask = require('../lib/cookTask');
+var cookTaskConfig = require('../lib/cookTaskConfig');
+
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.',
+  npm: true
+};
 
 module.exports = function(config) {
-  if(!config.tasks.images) return;
+  var rawTaskConfig = config.tasks.images;
+  if(!rawTaskConfig) return;
 
-  var relativePathArr = config.tasks.images.src;
-  if(!Array.isArray(relativePathArr)) {
-    relativePathArr = [relativePathArr];
-  }
+  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var imagesSrc = relativePathArr.reduceRight(function(soFar, relativePath) {
-    var rootImagePath = path.join(config.root.src, relativePath, '/**');
-    // Search for images in the package's node_modules too
-    var npmImagePath = path.join(process.cwd(), 'node_modules', relativePath, '/**');
+  var rawTask = function(options) {
+    gutil.log('Building images from ' + JSON.stringify(options.src));
 
-    // Order is important, it denotes merge priority (sooner is higher)
-    var imagePathArr = [
-      rootImagePath,
-      npmImagePath
-    ];
-
-    return imagePathArr.concat(soFar);
-  }, []);
-
-  var paths = {
-    src: imagesSrc,
-    dest: path.join(config.root.dest, config.tasks.images.dest)
-  };
-
-  var imagesTask = function() {
-    gutil.log('Building images from ' + JSON.stringify(paths.src));
-
-    return gulp.src(paths.src)
+    return gulp.src(options.src)
       .pipe(debug({ title: 'images' }))
-      .pipe(changed(paths.dest)) // Ignore unchanged files
+      .pipe(changed(options.dest)) // Ignore unchanged files
       .pipe(gulpIf(env.isProduction(), imagemin())) // Optimize
-      .pipe(gulp.dest(paths.dest));
+      .pipe(gulp.dest(options.dest));
   };
 
-  gulp.task('images', imagesTask);
+  gulp.task('images', cookTask(rawTask, config.root, taskConfig));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;

@@ -3,25 +3,31 @@
 var changed = require('gulp-changed');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var path = require('path');
 var debug = require('../lib/gulpDebug');
+var cookTask = require('../lib/cookTask');
+var cookTaskConfig = require('../lib/cookTaskConfig');
+
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.'
+};
 
 module.exports = function(config) {
-  if(!config.tasks.resources) return;
+  var rawTaskConfig = config.tasks.resources;
+  if(!rawTaskConfig) return;
 
-  var paths = {
-    src: path.join(config.root.src, config.tasks.resources.src, '/**'),
-    dest: path.join(config.root.dest, config.tasks.resources.dest)
-  };
+  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var resourcesTask = function() {
-    gutil.log('Building resources from ' + JSON.stringify(paths.src));
+  var rawTask = function(options) {
+    gutil.log('Building resources from ' + JSON.stringify(options.src));
 
-    return gulp.src(paths.src)
+    return gulp.src(options.src)
       .pipe(debug({ title: 'resources' }))
-      .pipe(changed(paths.dest)) // Ignore unchanged files
-      .pipe(gulp.dest(paths.dest));
+      .pipe(changed(options.dest)) // Ignore unchanged files
+      .pipe(gulp.dest(options.dest));
   };
 
-  gulp.task('resources', resourcesTask);
+  gulp.task('resources', cookTask(rawTask, config.root, taskConfig));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;

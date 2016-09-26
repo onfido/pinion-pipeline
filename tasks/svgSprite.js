@@ -3,30 +3,36 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var svgstore = require('gulp-svgstore');
-var path = require('path');
 var env = require('../lib/env');
 var debug = require('../lib/gulpDebug');
 var gulpIf = require('../lib/gulpIf');
 var imagemin = require('../lib/gulpImagemin');
+var cookTask = require('../lib/cookTask');
+var cookTaskConfig = require('../lib/cookTaskConfig');
+
+var defaultTaskConfig = {
+  src: '.',
+  dest: '.',
+  extensions: ['svg']
+};
 
 module.exports = function(config) {
-  if(!config.tasks.svgSprite) return;
+  var rawTaskConfig = config.tasks.svgSprite;
+  if(!rawTaskConfig) return;
 
-  var svgSpriteTask = function() {
+  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-    var settings = {
-      src: path.join(config.root.src, config.tasks.svgSprite.src, '/*.svg'),
-      dest: path.join(config.root.dest, config.tasks.svgSprite.dest)
-    };
+  var rawTask = function(options) {
+    gutil.log('Building SVGs from ' + JSON.stringify(options.src));
 
-    gutil.log('Building SVGs from ' + JSON.stringify(settings.src));
-
-    return gulp.src(settings.src)
+    return gulp.src(options.src)
       .pipe(debug({ title: 'svg' }))
       .pipe(gulpIf(env.isProduction(), imagemin()))
       .pipe(svgstore())
-      .pipe(gulp.dest(settings.dest));
+      .pipe(gulp.dest(options.dest));
   };
 
-  gulp.task('svgSprite', svgSpriteTask);
+  gulp.task('svgSprite', cookTask(rawTask, config.root, taskConfig));
 };
+
+module.exports.defaultTaskConfig = defaultTaskConfig;
