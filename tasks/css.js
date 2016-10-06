@@ -5,7 +5,7 @@ var gutil = require('gulp-util');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var autoprefixer = require('gulp-autoprefixer');
-var npmSass = require('npm-sass');
+var nodeSass = require('node-sass');
 var cleanCSS = require('gulp-clean-css');
 var handleErrors = require('../lib/handleErrors');
 var env = require('../lib/env');
@@ -31,7 +31,7 @@ module.exports = function(config) {
     var sassConfig = options.config.sass;
 
     // Allow `@import` calls to search the package's node_modules directory
-    sassConfig.importer = npmSass.importer;
+    sassConfig.includePaths = ["node_modules"];
 
     return gulp.src(options.src)
       .pipe(debug({ title: 'css' }))
