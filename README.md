@@ -24,6 +24,28 @@ pinion's CLI is designed to mimic gulp.
   * `pinion x y z` runs the tasks `x`, `y`, and then `z`
 
 # Sample `pinionfile.js`
+Not much is required to get going with simple tasks
+```js
+module.exports = {
+  tasks: {
+    // build from src/javascripts/app.js to bin/bundle.js
+    js: {
+      entries: {
+        bundle: ['app.js']
+      }
+    },
+
+    // build from src/stylesheets/*.{scss,css} to bin/*.css
+    css: {},
+
+    // build from src/images/* to bin/*
+    images: {}
+  }
+}
+```
+
+
+But we can be more verbose for greater control
 
 ```js
 module.exports = {

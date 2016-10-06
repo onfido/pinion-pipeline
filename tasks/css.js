@@ -15,7 +15,7 @@ var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
 var defaultTaskConfig = {
-  src: '.',
+  src: 'stylesheets',
   dest: '.',
   extensions: ['css', 'scss']
 };
@@ -28,7 +28,7 @@ module.exports = function(config) {
 
   var rawTask = function (options) {
     gutil.log('Compiling SASS from ' + JSON.stringify(options.src));
-    var sassConfig = options.config.sass;
+    var sassConfig = options.config.sass || {};
 
     // Allow `@import` calls to search the package's node_modules directory
     sassConfig.includePaths = ["node_modules"];

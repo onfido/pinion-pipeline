@@ -16,6 +16,7 @@
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
 var requireDir = require('require-dir');
+var objectAssign = require('object-assign');
 
 function passConfigRecursive(taskConstrucs, config) {
   Object.keys(taskConstrucs).forEach(function(key) {
@@ -37,7 +38,12 @@ function passConfigRecursive(taskConstrucs, config) {
 
 module.exports = {
   start: function(toRun, config) {
-    config = config || {};
+    config = objectAssign({
+      root: {
+        src: 'src',
+        dest: 'bin'
+      }
+    }, config);
 
     // Load all of the tasks that we might need to run
     var taskConstrucs = requireDir('./tasks', { recurse: true });

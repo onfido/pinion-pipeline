@@ -8,7 +8,7 @@ var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
 var defaultTaskConfig = {
-  src: '.',
+  src: 'fonts',
   dest: '.'
 };
 
