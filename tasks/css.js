@@ -30,7 +30,7 @@ module.exports = function(config) {
     var sassConfig = options.config.sass || {};
 
     // Allow `@import` calls to search the package's node_modules directory
-    sassConfig.includePaths = ["node_modules"];
+    sassConfig.includePaths = ['node_modules'];
 
     return gulp.src(options.src)
       .pipe(debug({ title: 'css' }))
