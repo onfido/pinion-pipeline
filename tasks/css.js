@@ -5,7 +5,6 @@ var gutil = require('gulp-util');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var autoprefixer = require('gulp-autoprefixer');
-var nodeSass = require('node-sass');
 var cleanCSS = require('gulp-clean-css');
 var handleErrors = require('../lib/handleErrors');
 var env = require('../lib/env');
