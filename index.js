@@ -13,45 +13,40 @@
   when you run `pinion`.
 */
 
-var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence');
-var requireDir = require('require-dir');
-var objectAssign = require('object-assign');
+import 'babel-polyfill';
+import gulp from 'gulp';
+import gulpSequence from 'gulp-sequence';
+import requireDir from 'require-dir';
 
-function passConfigRecursive(taskConstrucs, config) {
-  Object.keys(taskConstrucs).forEach(function(key) {
-    if(!taskConstrucs.hasOwnProperty(key)) {
-      return;
+const passConfigRecursive = (taskConstrucs, config) => {
+  for(let key in taskConstrucs) {
+    const task = taskConstrucs[key].default || taskConstrucs[key];
+    if(typeof task === 'object') {
+      passConfigRecursive(task, config);
     }
-
-    if(typeof taskConstrucs[key] === 'object') {
-      passConfigRecursive(taskConstrucs[key], config);
-    }
-    else if(typeof taskConstrucs[key] === 'function') {
-      taskConstrucs[key](config);
+    else if(typeof task === 'function') {
+      task(config);
     }
     else {
       throw new Error('Can only pass config to a function, or an object containing functions');
     }
-  });
-}
-
-module.exports = {
-  start: function(toRun, config) {
-    config = objectAssign({
-      root: {
-        src: 'src',
-        dest: 'bin'
-      }
-    }, config);
-
-    // Load all of the tasks that we might need to run
-    var taskConstrucs = requireDir('./tasks', { recurse: true });
-    passConfigRecursive(taskConstrucs, config);
-
-    // `gulp.start()` forces our tasks in parallel, so we need a pseudo-task to
-    // force sequential task running
-    gulp.task('__toRun', gulpSequence.apply(this, toRun));
-    gulp.start('__toRun');
   }
 };
+
+export function start(toRun, config) {
+  config = Object.assign({
+    root: {
+      src: 'src',
+      dest: 'bin'
+    }
+  }, config);
+
+  // Load all of the tasks that we might need to run
+  const taskConstrucs = requireDir('./tasks', { recurse: true });
+  passConfigRecursive(taskConstrucs, config);
+
+  // `gulp.start()` forces our tasks in parallel, so we need a pseudo-task to
+  // force sequential task running
+  gulp.task('__toRun', gulpSequence(...toRun));
+  gulp.start('__toRun');
+}

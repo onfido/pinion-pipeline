@@ -1,13 +1,13 @@
 'use strict';
 
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var gulpSequence = require('gulp-sequence');
-var env = require('../lib/env');
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import gulpSequence from 'gulp-sequence';
+import { isProduction } from '../lib/env';
 
-module.exports = function() {
-  var productionTask = function(cb) {
-    if(!env.isProduction()) {
+export default () => {
+  const productionTask = (cb) => {
+    if(!isProduction()) {
       gutil.log(
         gutil.colors.red('WARNING!'),
         'You are running the production build, but your NODE_ENV is not \'production\''

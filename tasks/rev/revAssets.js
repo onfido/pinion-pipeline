@@ -1,15 +1,15 @@
 'use strict';
 
-var gulp = require('gulp');
-var path = require('path');
-var rev = require('gulp-rev');
-var revNapkin = require('gulp-rev-napkin');
+import gulp from 'gulp';
+import path from 'path';
+import rev from 'gulp-rev';
+import revNapkin from 'gulp-rev-napkin';
 
-module.exports = function(config) {
+export default (config) => {
   // Add md5 hashes to assets referenced by CSS and JS files
-  gulp.task('rev-assets', function() {
+  gulp.task('rev-assets', () => {
     // Ignore files that may reference assets. We'll rev them next.
-    var ignoreThese = '!' + path.join(config.root.dest,'/**/*+(css|js|json|html)');
+    const ignoreThese = '!' + path.join(config.root.dest,'/**/*+(css|js|json|html)');
 
     return gulp.src([path.join(config.root.dest,'/**/*'), ignoreThese])
       .pipe(rev())

@@ -1,17 +1,17 @@
 'use strict';
 
-var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence');
+import gulp from 'gulp';
+import gulpSequence from 'gulp-sequence';
 
-module.exports = function(config) {
+export default (config) => {
   // Grouped by what can run in parallel
-  var assetTasks = [
+  const assetTasks = [
     'fonts',
     'images',
     'svgSprite',
     'resources'
   ];
-  var codeTasks = [
+  const codeTasks = [
     'css',
     {
       configName: 'js',
@@ -20,29 +20,25 @@ module.exports = function(config) {
     }
   ];
 
-  var applyUnboundVariant = function(variant, task) {
-    return (task && task[variant || 'default']) || task;
-  };
+  const applyUnboundVariant = (variant, task) =>
+    (task && task[variant || 'default']) || task;
 
-  var matchFilter = function(task) {
-    return config.tasks[(task && task.configName) || task];
-  };
+  const matchFilter = (task) =>
+    config.tasks[(task && task.configName) || task];
 
-  var nonEmptyFilter = function(x) {
-    return x && !(Array.isArray(x) && x.length === 0);
-  };
+  const nonEmptyFilter = (x) => x && !(Array.isArray(x) && x.length === 0);
 
-  var buildDefaultTask = function(variant) {
-    var applyVariant = applyUnboundVariant.bind(this, variant);
+  const buildDefaultTask = (variant) => {
+    const applyVariant = (task) => applyUnboundVariant(variant, task);
 
-    return function(cb) {
-      var sequence = [
+    return (cb) => {
+      const sequence = [
         assetTasks.filter(matchFilter).map(applyVariant),
         codeTasks.filter(matchFilter).map(applyVariant),
         cb
       ].filter(nonEmptyFilter);
 
-      gulpSequence.apply(gulpSequence, sequence);
+      gulpSequence(...sequence);
     };
   };
 

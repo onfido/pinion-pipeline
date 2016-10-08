@@ -1,29 +1,17 @@
 'use strict';
 
-var gulp = require('gulp');
-var path = require('path');
-var rev = require('gulp-rev');
-var revNapkin = require('gulp-rev-napkin');
+import gulp from 'gulp';
+import path from 'path';
+import rev from 'gulp-rev';
+import revNapkin from 'gulp-rev-napkin';
 
-module.exports = function(config) {
-  // Rev CSS and JS files
-
-  function revTask(suffix) {
-    return gulp.src(path.join(config.root.dest, '**/*.' + suffix))
+export default (config) => {
+  gulp.task('rev-css-js', () =>
+    gulp.src(path.join(config.root.dest, '**/*.{css,js}'))
       .pipe(rev())
       .pipe(gulp.dest(config.root.dest))
       .pipe(revNapkin({verbose: false}))
       .pipe(rev.manifest(path.join(config.root.dest, 'rev-manifest.json'), {merge: true}))
-      .pipe(gulp.dest(''));
-  }
-
-  gulp.task('rev-css', function(){
-    return revTask('css');
-  });
-
-  gulp.task('rev-js', function() {
-    return revTask('js');
-  });
-
-  gulp.task('rev-css-js', ['rev-css', 'rev-js']);
+      .pipe(gulp.dest(''))
+  );
 };

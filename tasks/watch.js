@@ -1,38 +1,39 @@
 'use strict';
 
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var watch = require('gulp-watch');
-var merge = require('merge-stream');
-var env = require('../lib/env');
-var cookTask = require('../lib/cookTask');
-var cookTaskConfig = require('../lib/cookTaskConfig');
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import watch from 'gulp-watch';
+import merge from 'merge-stream';
+import { isProduction } from '../lib/env';
+import cookTask from '../lib/cookTask';
+import cookTaskConfig from '../lib/cookTaskConfig';
 
-var nonEmptyFilter = function(item) {
-  return Boolean(item);
-};
+const nonEmptyFilter = (x) => x && !(Array.isArray(x) && !x.length);
 
-module.exports = function(config) {
-  var watchableTasks = ['fonts', 'images', 'svgSprite', 'resources', 'css'];
+export default (config) => {
+  const watchableTasks = ['fonts', 'images', 'svgSprite', 'resources', 'css'];
 
-  var watchTask = function() {
-    var watchStreams = watchableTasks.map(function(taskName) {
-      var rawTaskConfig = config.tasks[taskName];
+  const watchTask = () => {
+    const watchStreams = watchableTasks.map((taskName) => {
+      const rawTaskConfig = config.tasks[taskName];
       if(!rawTaskConfig) return;
 
-      var defaultTaskConfig = require('./' + taskName).defaultTaskConfig;
+      const defaultTaskConfig = require('./' + taskName).defaultTaskConfig;
 
-      var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+      const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-      var rawTask = function(options) {
-        if(env.isProduction()) {
+      const rawTask = (options) => {
+        if(isProduction()) {
           throw new Error('Cannot run the `watch` task in production mode!');
         }
 
         gutil.log('Watching ' + JSON.stringify(options.src) + ' to trigger ' + taskName);
-        return watch(options.src, { usePolling: true }, function() {
-          gulp.start(taskName);
-        });
+
+        return watch(
+          options.src,
+          { usePolling: true },
+          () => gulp.start(taskName)
+        );
       };
 
       return cookTask(rawTask, config.root, taskConfig)();

@@ -2,9 +2,9 @@
   "name": "pinion-pipeline",
   "description": "An opinionated pipeline, modelled after the Rails asset pipeline. Designed for the benefits of speed, and access to CommonJS modules",
   "version": "1.3.0",
-  "main": "./index.js",
+  "main": "./dist/index.js",
   "bin": {
-    "pinion": "./bin/index.js"
+    "pinion": "./dist/bin/index.js"
   },
   "engines": {
     "node": ">=4"
@@ -19,6 +19,7 @@
   "dependencies": {
     "babel-core": "^6.9.0",
     "babel-loader": "^6.2.4",
+    "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.5.0",
     "chalk": "^1.1.3",
@@ -61,7 +62,12 @@
     "webpack": "^1.13.2"
   },
   "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-plugin-uglify": "^1.0.2",
+    "babel-preset-es2015": "^6.16.0",
+    "gulp-babel": "^6.1.2",
     "gulp-jshint": "^2.0.1",
+    "gulp-uglify": "^2.0.0",
     "jshint": "^2.9.2"
   }
 }

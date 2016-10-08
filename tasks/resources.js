@@ -1,24 +1,24 @@
 'use strict';
 
-var changed = require('gulp-changed');
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var debug = require('../lib/gulpDebug');
-var cookTask = require('../lib/cookTask');
-var cookTaskConfig = require('../lib/cookTaskConfig');
+import changed from 'gulp-changed';
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import debug from '../lib/gulpDebug';
+import cookTask from '../lib/cookTask';
+import cookTaskConfig from '../lib/cookTaskConfig';
 
-var defaultTaskConfig = {
+const defaultTaskConfig = {
   src: 'resources',
   dest: '.'
 };
 
-module.exports = function(config) {
-  var rawTaskConfig = config.tasks.resources;
+export default (config) => {
+  const rawTaskConfig = config.tasks.resources;
   if(!rawTaskConfig) return;
 
-  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var rawTask = function(options) {
+  const rawTask = (options) => {
     gutil.log('Building resources from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)
@@ -30,4 +30,4 @@ module.exports = function(config) {
   gulp.task('resources', cookTask(rawTask, config.root, taskConfig));
 };
 
-module.exports.defaultTaskConfig = defaultTaskConfig;
+export { defaultTaskConfig };

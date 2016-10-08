@@ -1,38 +1,38 @@
 'use strict';
 
-var changed = require('gulp-changed');
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var env = require('../lib/env');
-var gulpIf = require('../lib/gulpIf');
-var debug = require('../lib/gulpDebug');
-var imagemin = require('../lib/gulpImagemin');
-var cookTask = require('../lib/cookTask');
-var cookTaskConfig = require('../lib/cookTaskConfig');
+import changed from 'gulp-changed';
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import { isProduction } from '../lib/env';
+import gulpIf from '../lib/gulpIf';
+import debug from '../lib/gulpDebug';
+import imagemin from '../lib/gulpImagemin';
+import cookTask from '../lib/cookTask';
+import cookTaskConfig from '../lib/cookTaskConfig';
 
-var defaultTaskConfig = {
+const defaultTaskConfig = {
   src: 'images',
   dest: '.',
   npm: true
 };
 
-module.exports = function(config) {
-  var rawTaskConfig = config.tasks.images;
+export default (config) => {
+  const rawTaskConfig = config.tasks.images;
   if(!rawTaskConfig) return;
 
-  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var rawTask = function(options) {
+  const rawTask = (options) => {
     gutil.log('Building images from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)
       .pipe(debug({ title: 'images' }))
       .pipe(changed(options.dest)) // Ignore unchanged files
-      .pipe(gulpIf(env.isProduction(), imagemin())) // Optimize
+      .pipe(gulpIf(isProduction(), imagemin())) // Optimize
       .pipe(gulp.dest(options.dest));
   };
 
   gulp.task('images', cookTask(rawTask, config.root, taskConfig));
 };
 
-module.exports.defaultTaskConfig = defaultTaskConfig;
+export { defaultTaskConfig };

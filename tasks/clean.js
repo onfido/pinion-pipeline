@@ -1,11 +1,11 @@
 'use strict';
 
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var del = require('del');
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import del from 'del';
 
-module.exports = function(config) {
-  var cleanTask = function () {
+export default (config) => {
+  const cleanTask = () => {
     gutil.log('Cleaning ' + config.root.dest);
 
     return del([config.root.dest]);
