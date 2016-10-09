@@ -2,16 +2,20 @@
 
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import sass from 'gulp-sass';
 import sourcemaps from 'gulp-sourcemaps';
-import autoprefixer from 'gulp-autoprefixer';
-import cleanCSS from 'gulp-clean-css';
 import handleErrors from '../lib/handleErrors';
 import { isProduction } from '../lib/env';
 import gulpIf from '../lib/gulpIf';
 import debug from '../lib/gulpDebug';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
+import requireTaskDeps from '../lib/requireTaskDeps';
+
+const taskDeps = {
+  sass: 'gulp-sass',
+  autoprefixer: 'gulp-autoprefixer',
+  cleanCSS: 'gulp-clean-css'
+};
 
 const defaultTaskConfig = {
   src: 'stylesheets',
@@ -24,6 +28,7 @@ export default (config) => {
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const { sass, autoprefixer, cleanCSS } = requireTaskDeps(taskDeps);
 
   const rawTask = (options) => {
     gutil.log('Compiling SASS from ' + JSON.stringify(options.src));
@@ -47,3 +52,4 @@ export default (config) => {
 };
 
 export { defaultTaskConfig };
+export { taskDeps };
