@@ -3,10 +3,10 @@
 import changed from 'gulp-changed';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
+import imagemin from 'gulp-imagemin';
 import { isProduction } from '../lib/env';
 import gulpIf from '../lib/gulpIf';
 import debug from '../lib/gulpDebug';
-import imagemin from '../lib/gulpImagemin';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
 

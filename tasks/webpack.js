@@ -2,13 +2,17 @@
 
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import webpack from 'webpack';
-import PassThrough from 'readable-stream/passthrough';
 import { isDevelopment, isProduction } from '../lib/env';
 import logger from '../lib/compileLogger';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
 import wpBaseConfig from '../lib/webpackBaseConfig';
+import requireTaskDeps from '../lib/requireTaskDeps';
+
+const taskDeps = {
+  webpack: 'webpack',
+  PassThrough: 'readable-stream/passthrough'
+};
 
 const defaultTaskConfig = {
   src: 'javascripts',
@@ -21,9 +25,11 @@ export default (config) => {
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const deps = requireTaskDeps(taskDeps);
+  const { webpack, PassThrough } = deps;
 
   const rawTask = (watch) => {
-    const wpconfig = wpBaseConfig(taskConfig, config.root);
+    const wpconfig = wpBaseConfig(deps, taskConfig, config.root);
 
     if(isDevelopment()) {
       wpconfig.devtool = 'source-map';
