@@ -3,12 +3,16 @@
 import changed from 'gulp-changed';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import imagemin from 'gulp-imagemin';
 import { isProduction } from '../lib/env';
 import gulpIf from '../lib/gulpIf';
 import debug from '../lib/gulpDebug';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
+import requireTaskDeps from '../lib/requireTaskDeps';
+
+const taskDeps = {
+  imagemin: 'gulp-imagemin'
+};
 
 const defaultTaskConfig = {
   src: 'images',
@@ -21,6 +25,7 @@ export default (config) => {
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const { imagemin } = requireTaskDeps(taskDeps);
 
   const rawTask = (options) => {
     gutil.log('Building images from ' + JSON.stringify(options.src));
@@ -36,3 +41,4 @@ export default (config) => {
 };
 
 export { defaultTaskConfig };
+export { taskDeps };

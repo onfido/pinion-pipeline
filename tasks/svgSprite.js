@@ -2,13 +2,17 @@
 
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import svgstore from 'gulp-svgstore';
-import imagemin from 'gulp-imagemin';
 import { isProduction } from '../lib/env';
 import debug from '../lib/gulpDebug';
 import gulpIf from '../lib/gulpIf';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
+import requireTaskDeps from '../lib/requireTaskDeps';
+
+const taskDeps = {
+  svgstore: 'gulp-svgstore',
+  imagemin: 'gulp-imagemin'
+};
 
 const defaultTaskConfig = {
   src: 'sprites',
@@ -21,6 +25,7 @@ export default (config) => {
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const { svgstore, imagemin } = requireTaskDeps(taskDeps);
 
   const rawTask = (options) => {
     gutil.log('Building SVGs from ' + JSON.stringify(options.src));
@@ -36,3 +41,4 @@ export default (config) => {
 };
 
 export { defaultTaskConfig };
+export { taskDeps };
