@@ -7,7 +7,7 @@ import debug from '../lib/gulpDebug';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
 
-const defaultTaskConfig = {
+export const defaultTaskConfig = {
   src: 'fonts',
   dest: '.'
 };
@@ -29,5 +29,3 @@ export default (config) => {
 
   gulp.task('fonts', cookTask(rawTask, config.root, taskConfig));
 };
-
-export { defaultTaskConfig };

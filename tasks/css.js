@@ -17,11 +17,13 @@ const taskDeps = {
   cleanCSS: 'gulp-clean-css'
 };
 
-const defaultTaskConfig = {
+export const defaultTaskConfig = {
   src: 'stylesheets',
   dest: '.',
   extensions: ['css', 'scss']
 };
+
+export const getTaskDeps = () => taskDeps;
 
 export default (config) => {
   const rawTaskConfig = config.tasks.css;
@@ -50,6 +52,3 @@ export default (config) => {
 
   gulp.task('css', cookTask(rawTask, config.root, taskConfig));
 };
-
-export { defaultTaskConfig };
-export { taskDeps };

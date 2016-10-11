@@ -6,7 +6,7 @@ import { isDevelopment, isProduction } from '../lib/env';
 import logger from '../lib/compileLogger';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
-import wpBaseConfig from '../lib/webpackBaseConfig';
+import wpBaseConfig, { getTaskDeps as getWpTaskDeps } from '../lib/webpackBaseConfig';
 import requireTaskDeps from '../lib/requireTaskDeps';
 
 const taskDeps = {
@@ -14,10 +14,17 @@ const taskDeps = {
   PassThrough: 'readable-stream/passthrough'
 };
 
-const defaultTaskConfig = {
+export const defaultTaskConfig = {
   src: 'javascripts',
   dest: '.',
   extensions: ['js']
+};
+
+export const getTaskDeps = (config) => {
+  const rawTaskConfig = config.tasks.js;
+  if(!rawTaskConfig) return;
+
+  return Object.assign({}, taskDeps, getWpTaskDeps(rawTaskConfig));
 };
 
 export default (config) => {
@@ -25,7 +32,7 @@ export default (config) => {
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
-  const deps = requireTaskDeps(taskDeps);
+  const deps = requireTaskDeps(getTaskDeps(config));
   const { webpack, PassThrough } = deps;
 
   const rawTask = (watch) => {
@@ -81,5 +88,3 @@ export default (config) => {
   gulp.task('webpack', cookWebpackTask(false));
   gulp.task('webpack:watch', cookWebpackTask(true));
 };
-
-export { defaultTaskConfig };

@@ -14,11 +14,13 @@ const taskDeps = {
   imagemin: 'gulp-imagemin'
 };
 
-const defaultTaskConfig = {
+export const defaultTaskConfig = {
   src: 'images',
   dest: '.',
   npm: true
 };
+
+export const getTaskDeps = () => taskDeps;
 
 export default (config) => {
   const rawTaskConfig = config.tasks.images;
@@ -39,6 +41,3 @@ export default (config) => {
 
   gulp.task('images', cookTask(rawTask, config.root, taskConfig));
 };
-
-export { defaultTaskConfig };
-export { taskDeps };
