@@ -6,6 +6,11 @@
   "bin": {
     "pinion": "./dist/bin/index.js"
   },
+  "scripts": {
+    "build": "gulp",
+    "prepublish": "build",
+    "dev": "gulp default watch"
+  },
   "engines": {
     "node": ">=4"
   },

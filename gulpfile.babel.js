@@ -5,24 +5,28 @@ import jshint from 'gulp-jshint';
 import uglify from 'gulp-uglify';
 import babel from 'gulp-babel';
 
+const lintSrc = [
+  '*.js',
+  './tasks/**/*.js',
+  './bin/**/*.js',
+  './lib/**/*.js'
+];
+
+const bundleSrc = [
+  './index.js',
+  './tasks/**/*.js',
+  './bin/**/*.js',
+  './lib/**/*.js'
+];
+
 gulp.task('lint', () =>
-  gulp.src([
-    '*.js',
-    './tasks/**/*.js',
-    './bin/**/*.js',
-    './lib/**/*.js'
-  ])
+  gulp.src(lintSrc)
   .pipe(jshint())
   .pipe(jshint.reporter('default'))
 );
 
 gulp.task('bundle', () =>
-  gulp.src([
-    './index.js',
-    './tasks/**/*.js',
-    './bin/**/*.js',
-    './lib/**/*.js'
-  ], { base: '.' })
+  gulp.src(bundleSrc, { base: '.' })
   .pipe(babel({
       presets: ['es2015']
   }))
@@ -31,3 +35,8 @@ gulp.task('bundle', () =>
 );
 
 gulp.task('default', ['lint', 'bundle']);
+
+gulp.task('watch', () => {
+  gulp.watch(lintSrc, ['lint']);
+  gulp.watch(bundleSrc, ['bundle']);
+});
