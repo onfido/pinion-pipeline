@@ -29,7 +29,7 @@ export default (config) => {
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   const rawTask = (options) => {
-    const { svgstore, imagemin } = requireTaskDeps(getTaskDeps());
+    const { svgstore, imagemin } = requireTaskDeps(getTaskDeps(config));
 
     gutil.log('Building SVGs from ' + JSON.stringify(options.src));
 
