@@ -23,16 +23,17 @@ export const defaultTaskConfig = {
   extensions: ['css', 'scss']
 };
 
-export const getTaskDeps = () => taskDeps;
+export const getTaskDeps = (config) => config.tasks.css && taskDeps;
 
 export default (config) => {
   const rawTaskConfig = config.tasks.css;
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
-  const { sass, autoprefixer, cleanCSS } = requireTaskDeps(taskDeps);
 
   const rawTask = (options) => {
+    const { sass, autoprefixer, cleanCSS } = requireTaskDeps(taskDeps);
+
     gutil.log('Compiling SASS from ' + JSON.stringify(options.src));
     const sassConfig = Object.assign({}, options.config.sass);
 

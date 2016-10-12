@@ -20,16 +20,17 @@ export const defaultTaskConfig = {
   extensions: ['svg']
 };
 
-export const getTaskDeps = () => taskDeps;
+export const getTaskDeps = (config) => config.tasks.svgSprite && taskDeps;
 
 export default (config) => {
   const rawTaskConfig = config.tasks.svgSprite;
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
-  const { svgstore, imagemin } = requireTaskDeps(getTaskDeps());
 
   const rawTask = (options) => {
+    const { svgstore, imagemin } = requireTaskDeps(getTaskDeps());
+
     gutil.log('Building SVGs from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)

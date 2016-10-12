@@ -20,16 +20,17 @@ export const defaultTaskConfig = {
   npm: true
 };
 
-export const getTaskDeps = () => taskDeps;
+export const getTaskDeps = (config) => config.tasks.images && taskDeps;
 
 export default (config) => {
   const rawTaskConfig = config.tasks.images;
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
-  const { imagemin } = requireTaskDeps(taskDeps);
 
   const rawTask = (options) => {
+    const { imagemin } = requireTaskDeps(taskDeps);
+
     gutil.log('Building images from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)

@@ -32,10 +32,10 @@ export default (config) => {
   if(!rawTaskConfig) return;
 
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
-  const deps = requireTaskDeps(getTaskDeps(config));
-  const { webpack, PassThrough } = deps;
 
   const rawTask = (watch) => {
+    const deps = requireTaskDeps(getTaskDeps(config));
+    const { webpack, PassThrough } = deps;
     const wpconfig = wpBaseConfig(deps, taskConfig, config.root);
 
     if(isDevelopment()) {
