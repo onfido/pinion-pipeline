@@ -6,6 +6,11 @@
   "bin": {
     "pinion": "./dist/bin/index.js"
   },
+  "scripts": {
+    "build": "gulp",
+    "prepublish": "npm run build",
+    "dev": "gulp default watch"
+  },
   "engines": {
     "node": ">=4"
   },
@@ -42,7 +47,6 @@
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
-    "babel-plugin-uglify": "^1.0.2",
     "babel-preset-es2015": "^6.16.0",
     "gulp-babel": "^6.1.2",
     "gulp-jshint": "^2.0.1",
