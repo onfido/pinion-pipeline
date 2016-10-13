@@ -2,7 +2,6 @@
 
 import gulp from 'gulp';
 import jshint from 'gulp-jshint';
-import uglify from 'gulp-uglify';
 import babel from 'gulp-babel';
 
 const lintSrc = [
@@ -30,7 +29,6 @@ gulp.task('bundle', () =>
   .pipe(babel({
       presets: ['es2015']
   }))
-  .pipe(uglify())
   .pipe(gulp.dest('dist'))
 );
 
