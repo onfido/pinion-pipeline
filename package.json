@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "gulp",
-    "prepublish": "build",
+    "prepublish": "npm run build",
     "dev": "gulp default watch"
   },
   "engines": {
