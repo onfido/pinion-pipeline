@@ -10,8 +10,9 @@ var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
 var defaultTaskConfig = {
-  src: '.',
-  dest: '.'
+  src: 'javascripts',
+  dest: '.',
+  extensions: ['js']
 };
 
 module.exports = function(config) {

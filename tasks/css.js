@@ -5,7 +5,6 @@ var gutil = require('gulp-util');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var autoprefixer = require('gulp-autoprefixer');
-var npmSass = require('npm-sass');
 var cleanCSS = require('gulp-clean-css');
 var handleErrors = require('../lib/handleErrors');
 var env = require('../lib/env');
@@ -15,7 +14,7 @@ var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
 var defaultTaskConfig = {
-  src: '.',
+  src: 'stylesheets',
   dest: '.',
   extensions: ['css', 'scss']
 };
@@ -28,10 +27,10 @@ module.exports = function(config) {
 
   var rawTask = function (options) {
     gutil.log('Compiling SASS from ' + JSON.stringify(options.src));
-    var sassConfig = options.config.sass;
+    var sassConfig = options.config.sass || {};
 
     // Allow `@import` calls to search the package's node_modules directory
-    sassConfig.importer = npmSass.importer;
+    sassConfig.includePaths = ['node_modules'];
 
     return gulp.src(options.src)
       .pipe(debug({ title: 'css' }))
