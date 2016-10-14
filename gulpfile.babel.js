@@ -7,13 +7,16 @@ import babel from 'gulp-babel';
 const lintSrc = [
   '*.js',
   './tasks/**/*.js',
+  './wsTasks/**/*.js',
   './bin/**/*.js',
   './lib/**/*.js'
 ];
 
 const bundleSrc = [
-  './index.js',
+  './*.js',
+  '!./gulpfile.*.js',
   './tasks/**/*.js',
+  './wsTasks/**/*.js',
   './bin/**/*.js',
   './lib/**/*.js'
 ];
