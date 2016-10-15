@@ -3,11 +3,11 @@
 'use strict';
 
 import gutil from 'gulp-util';
-import chalk from 'chalk';
 import semver from 'semver';
 import Liftoff from 'liftoff';
 import tildify from 'tildify';
 import minimist from 'minimist';
+import * as colors from '../lib/colors';
 import cliPackage from '../../package';
 
 const argv = minimist(process.argv.slice(2));
@@ -40,15 +40,15 @@ const printVersion = (env) => {
 const ensurePinionRunnable = (env) => {
   if(!env.modulePath) {
     gutil.log(
-      chalk.red('Local pinion-pipeline not found in'),
-      chalk.magenta(tildify(env.cwd))
+      colors.red('Local pinion-pipeline not found in'),
+      colors.magenta(tildify(env.cwd))
     );
-    gutil.log(chalk.red('Try running: npm install pinion-pipeline'));
+    gutil.log(colors.red('Try running: npm install pinion-pipeline'));
     process.exit(1);
   }
 
   if(!env.configPath) {
-    gutil.log(chalk.red('No pinionfile found'));
+    gutil.log(colors.red('No pinionfile found'));
     process.exit(1);
   }
 };
@@ -56,9 +56,9 @@ const ensurePinionRunnable = (env) => {
 const compareCliToLocalVersion = (env) => {
   // Check for semver difference between cli and local installation
   if(semver.gt(cliPackage.version, env.modulePackage.version)) {
-    gutil.log(chalk.red('Warning: pinion-pipeline version mismatch:'));
-    gutil.log(chalk.red('Global pinion-pipeline is', cliPackage.version));
-    gutil.log(chalk.red('Local pinion-pipeline is', env.modulePackage.version));
+    gutil.log(colors.red('Warning: pinion-pipeline version mismatch:'));
+    gutil.log(colors.red('Global pinion-pipeline is', cliPackage.version));
+    gutil.log(colors.red('Local pinion-pipeline is', env.modulePackage.version));
   }
 };
 
@@ -67,7 +67,7 @@ const setCwdToEnv = (env) => {
     process.chdir(env.cwd);
     gutil.log(
       'Working directory changed to',
-      chalk.magenta(tildify(env.cwd))
+      colors.magenta(tildify(env.cwd))
     );
   }
 };
@@ -87,7 +87,7 @@ const handleArguments = (env) => {
   setCwdToEnv(env);
 
   // This is what actually loads up the pinionfile
-  gutil.log('Using pinionfile', chalk.magenta(tildify(env.configPath)));
+  gutil.log('Using pinionfile', colors.magenta(tildify(env.configPath)));
   const pinionConfig = require(env.configPath);
   const pinionInst = require(env.modulePath);
 
