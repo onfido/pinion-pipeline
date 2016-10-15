@@ -1,10 +1,8 @@
 'use strict';
 
 import gulp from 'gulp';
-import gutil from 'gulp-util';
 import { isProduction } from '../lib/env';
-import debug from '../lib/gulpDebug';
-import gulpIf from '../lib/gulpIf';
+import { gulpIf, gulpDebug } from '../lib/gulpHelpers';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
 import requireTaskDeps from '../lib/requireTaskDeps';
@@ -31,10 +29,10 @@ export default (config) => {
   const rawTask = (options) => {
     const { svgstore, imagemin } = requireTaskDeps(getTaskDeps(config));
 
-    gutil.log('Building SVGs from ' + JSON.stringify(options.src));
+    console.log('Building SVGs from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)
-      .pipe(debug({ title: 'svg' }))
+      .pipe(gulpDebug({ title: 'svg' }))
       .pipe(gulpIf(isProduction(), imagemin()))
       .pipe(svgstore())
       .pipe(gulp.dest(options.dest));

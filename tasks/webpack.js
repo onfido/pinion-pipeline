@@ -1,7 +1,7 @@
 'use strict';
 
 import gulp from 'gulp';
-import gutil from 'gulp-util';
+import through from 'through';
 import { isDevelopment, isProduction } from '../lib/env';
 import logger from '../lib/compileLogger';
 import cookTask from '../lib/cookTask';
@@ -10,8 +10,7 @@ import wpBaseConfig, { getTaskDeps as getWpTaskDeps } from '../lib/webpackBaseCo
 import requireTaskDeps from '../lib/requireTaskDeps';
 
 const taskDeps = {
-  webpack: 'webpack',
-  PassThrough: 'readable-stream/passthrough'
+  webpack: 'webpack'
 };
 
 export const defaultTaskConfig = {
@@ -35,7 +34,7 @@ export default (config) => {
 
   const rawTask = (watch) => {
     const deps = requireTaskDeps(getTaskDeps(config));
-    const { webpack, PassThrough } = deps;
+    const { webpack } = deps;
     const wpconfig = wpBaseConfig(deps, taskConfig, config.root);
 
     if(isDevelopment()) {
@@ -51,7 +50,7 @@ export default (config) => {
       );
     }
 
-    const wpStream = new PassThrough();
+    const wpStream = through();
 
     let initialCompile = false;
     const onCompile = (err, stats) => {
@@ -64,14 +63,14 @@ export default (config) => {
     };
 
     if(watch) {
-      gutil.log('Kicking off webpack in watch-mode');
+      console.log('Kicking off webpack in watch-mode');
 
       const watchOptions = { poll: true };
 
       webpack(wpconfig).watch(watchOptions, onCompile);
     }
     else {
-      gutil.log('Kicking off webpack in build-mode');
+      console.log('Kicking off webpack in build-mode');
 
       webpack(wpconfig, onCompile);
     }
