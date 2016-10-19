@@ -144,6 +144,7 @@ Uses webpack to compile Javascript code
  * `extractSharedJs` - create a shared.js file with common code shared between multiple entries
  * `entries` - a map of built file names, to an array of source files. E.g. `{ bundle: ['./a.js', './b.js'] }` to create a bundle.js from an a.js and b.js
  * `globals` - a map of local npm packages to their aliases. E.g. `jquery: ['$', 'jQuery']`
+ * `loaders` - config for webpack loaders to be concatted onto the default Pinion loaders. (Pinion will search your package's node_modules for any loader dependencies it can't find in its own)
 
 ### css
 
