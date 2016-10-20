@@ -1,19 +1,29 @@
 'use strict';
 
 import gulp from 'gulp';
-import gutil from 'gulp-util';
-import webpack from 'webpack';
-import PassThrough from 'readable-stream/passthrough';
+import through from 'through';
 import { isDevelopment, isProduction } from '../lib/env';
 import logger from '../lib/compileLogger';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
-import wpBaseConfig from '../lib/webpackBaseConfig';
+import wpBaseConfig, { getTaskDeps as getWpTaskDeps } from '../lib/webpackBaseConfig';
+import requireTaskDeps from '../lib/requireTaskDeps';
 
-const defaultTaskConfig = {
+const taskDeps = {
+  webpack: 'webpack'
+};
+
+export const defaultTaskConfig = {
   src: 'javascripts',
   dest: '.',
   extensions: ['js']
+};
+
+export const getTaskDeps = (config) => {
+  const rawTaskConfig = config.tasks.js;
+  if(!rawTaskConfig) return;
+
+  return Object.assign({}, taskDeps, getWpTaskDeps(rawTaskConfig));
 };
 
 export default (config) => {
@@ -23,7 +33,9 @@ export default (config) => {
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   const rawTask = (watch) => {
-    const wpconfig = wpBaseConfig(taskConfig, config.root);
+    const deps = requireTaskDeps(getTaskDeps(config));
+    const { webpack } = deps;
+    const wpconfig = wpBaseConfig(deps, taskConfig, config.root);
 
     if(isDevelopment()) {
       wpconfig.devtool = 'source-map';
@@ -38,7 +50,7 @@ export default (config) => {
       );
     }
 
-    const wpStream = new PassThrough();
+    const wpStream = through();
 
     let initialCompile = false;
     const onCompile = (err, stats) => {
@@ -51,14 +63,14 @@ export default (config) => {
     };
 
     if(watch) {
-      gutil.log('Kicking off webpack in watch-mode');
+      console.log('Kicking off webpack in watch-mode');
 
       const watchOptions = { poll: true };
 
       webpack(wpconfig).watch(watchOptions, onCompile);
     }
     else {
-      gutil.log('Kicking off webpack in build-mode');
+      console.log('Kicking off webpack in build-mode');
 
       webpack(wpconfig, onCompile);
     }
@@ -75,5 +87,3 @@ export default (config) => {
   gulp.task('webpack', cookWebpackTask(false));
   gulp.task('webpack:watch', cookWebpackTask(true));
 };
-
-export { defaultTaskConfig };

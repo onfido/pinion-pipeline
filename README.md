@@ -15,6 +15,9 @@ pinion was born to replace the Rails asset pipeline, in a Rails workspace. Benef
 
 `npm install -g pinion-pipeline` will provide a `pinion` CLI for you to use. Or, you can just `$(npm bin)/pinion` in your local workspace.
 
+`pinion install` will install the necessary node package's for your workspace,
+once you've created your pinionfile.js
+
 # Usage
 
 pinion's CLI is designed to mimic gulp.
@@ -111,6 +114,9 @@ module.exports = {
 }
 ```
 
+Running `pinion install` will analyze your `pinionfile.js`, and help you install
+the necessary packages from `npm`.
+
 # Modes
 
 Depending on the `NODE_ENV`, tasks perform differently. As a rule of thumb:
@@ -144,6 +150,13 @@ Uses webpack to compile Javascript code
  * `extractSharedJs` - create a shared.js file with common code shared between multiple entries
  * `entries` - a map of built file names, to an array of source files. E.g. `{ bundle: ['./a.js', './b.js'] }` to create a bundle.js from an a.js and b.js
  * `globals` - a map of local npm packages to their aliases. E.g. `jquery: ['$', 'jQuery']`
+ * `loaders` - an array of loader-config objects, or strings of default loader names. E.g. `[ 'js', {test: /x\.js$/, loader: 'y'} ]`
+   * `js` - a default loader catching \*.js files, handling ES6 code
+   * `jsx` - a default loader catching \*.jsx files, handling ES6 JSX code
+   * `coffee` - a default loader catching \.coffee files, handling CoffeeScript code
+   * `json` - a default loader catching \.json files, handling JSON files
+   * `css` - a default loader catching \*.css files, exporting CSS modules from CSS files
+   * `scss` - a default loader catching \*.scss files, exporting CSS modules from SCSS files
 
 ### css
 
@@ -213,6 +226,11 @@ and
 ```
 
 ## Non-configurable tasks
+
+## install
+
+Install the needed dependencies, which are determined by analaysing the pinionfile
+in your workspace at the time of calling `install`
 
 ### default
 

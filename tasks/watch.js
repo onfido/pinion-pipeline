@@ -1,7 +1,6 @@
 'use strict';
 
 import gulp from 'gulp';
-import gutil from 'gulp-util';
 import watch from 'gulp-watch';
 import merge from 'merge-stream';
 import { isProduction } from '../lib/env';
@@ -27,7 +26,7 @@ export default (config) => {
           throw new Error('Cannot run the `watch` task in production mode!');
         }
 
-        gutil.log('Watching ' + JSON.stringify(options.src) + ' to trigger ' + taskName);
+        console.log('Watching ' + JSON.stringify(options.src) + ' to trigger ' + taskName);
 
         return watch(
           options.src,

@@ -17,21 +17,8 @@ import 'babel-polyfill';
 import gulp from 'gulp';
 import gulpSequence from 'gulp-sequence';
 import requireDir from 'require-dir';
-
-const passConfigRecursive = (taskConstrucs, config) => {
-  for(let key in taskConstrucs) {
-    const task = taskConstrucs[key].default || taskConstrucs[key];
-    if(typeof task === 'object') {
-      passConfigRecursive(task, config);
-    }
-    else if(typeof task === 'function') {
-      task(config);
-    }
-    else {
-      throw new Error('Can only pass config to a function, or an object containing functions');
-    }
-  }
-};
+import { passConfigToTasks, getTaskDeps } from './taskHelpers';
+import installTask from './wsTasks/install';
 
 export function start(toRun, config) {
   config = Object.assign({
@@ -43,7 +30,10 @@ export function start(toRun, config) {
 
   // Load all of the tasks that we might need to run
   const taskConstrucs = requireDir('./tasks', { recurse: true });
-  passConfigRecursive(taskConstrucs, config);
+  passConfigToTasks(taskConstrucs, config);
+
+  const deps = getTaskDeps(taskConstrucs, config);
+  installTask(deps);
 
   // `gulp.start()` forces our tasks in parallel, so we need a pseudo-task to
   // force sequential task running

@@ -2,12 +2,11 @@
 
 import changed from 'gulp-changed';
 import gulp from 'gulp';
-import gutil from 'gulp-util';
-import debug from '../lib/gulpDebug';
+import { gulpDebug } from '../lib/gulpHelpers';
 import cookTask from '../lib/cookTask';
 import cookTaskConfig from '../lib/cookTaskConfig';
 
-const defaultTaskConfig = {
+export const defaultTaskConfig = {
   src: 'fonts',
   dest: '.'
 };
@@ -19,15 +18,13 @@ export default (config) => {
   const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
   const rawTask = (options) => {
-    gutil.log('Building fonts from ' + JSON.stringify(options.src));
+    console.log('Building fonts from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)
-      .pipe(debug({ title: 'fonts' }))
+      .pipe(gulpDebug({ title: 'fonts' }))
       .pipe(changed(options.dest)) // Ignore unchanged files
       .pipe(gulp.dest(options.dest));
   };
 
   gulp.task('fonts', cookTask(rawTask, config.root, taskConfig));
 };
-
-export { defaultTaskConfig };
