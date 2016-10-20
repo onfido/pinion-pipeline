@@ -1,33 +1,33 @@
 'use strict';
 
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var svgstore = require('gulp-svgstore');
-var env = require('../lib/env');
-var debug = require('../lib/gulpDebug');
-var gulpIf = require('../lib/gulpIf');
-var imagemin = require('../lib/gulpImagemin');
-var cookTask = require('../lib/cookTask');
-var cookTaskConfig = require('../lib/cookTaskConfig');
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import svgstore from 'gulp-svgstore';
+import { isProduction } from '../lib/env';
+import debug from '../lib/gulpDebug';
+import gulpIf from '../lib/gulpIf';
+import imagemin from '../lib/gulpImagemin';
+import cookTask from '../lib/cookTask';
+import cookTaskConfig from '../lib/cookTaskConfig';
 
-var defaultTaskConfig = {
+const defaultTaskConfig = {
   src: 'sprites',
   dest: '.',
   extensions: ['svg']
 };
 
-module.exports = function(config) {
-  var rawTaskConfig = config.tasks.svgSprite;
+export default (config) => {
+  const rawTaskConfig = config.tasks.svgSprite;
   if(!rawTaskConfig) return;
 
-  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var rawTask = function(options) {
+  const rawTask = (options) => {
     gutil.log('Building SVGs from ' + JSON.stringify(options.src));
 
     return gulp.src(options.src)
       .pipe(debug({ title: 'svg' }))
-      .pipe(gulpIf(env.isProduction(), imagemin()))
+      .pipe(gulpIf(isProduction(), imagemin()))
       .pipe(svgstore())
       .pipe(gulp.dest(options.dest));
   };
@@ -35,4 +35,4 @@ module.exports = function(config) {
   gulp.task('svgSprite', cookTask(rawTask, config.root, taskConfig));
 };
 
-module.exports.defaultTaskConfig = defaultTaskConfig;
+export { defaultTaskConfig };

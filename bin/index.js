@@ -2,22 +2,17 @@
 
 'use strict';
 
-process.on('exit', function(exitCode) {
-  if(exitCode !== 0) {
-    console.warn('Non-zero exit code ' + exitCode);
-    console.warn('Stack trace is as follows:');
-    console.warn(new Error().stack);
-  }
-});
+import gutil from 'gulp-util';
+import chalk from 'chalk';
+import semver from 'semver';
+import Liftoff from 'liftoff';
+import tildify from 'tildify';
+import minimist from 'minimist';
+import cliPackage from '../../package';
 
-var gutil = require('gulp-util');
-var chalk = require('chalk');
-var semver = require('semver');
-var Liftoff = require('liftoff');
-var tildify = require('tildify');
-var argv = require('minimist')(process.argv.slice(2));
+const argv = minimist(process.argv.slice(2));
 
-var cli = new Liftoff({
+const cli = new Liftoff({
   name: 'pinion-pipeline',
   configName: 'pinionfile',
   extensions: {
@@ -27,42 +22,23 @@ var cli = new Liftoff({
 });
 
 // Parse the command line arguments (copied from Gulp)
-var cliPackage = require('../package');
-var versionFlag = argv.v || argv.version;
-var tasks = argv._;
-var toRun = tasks.length ? tasks : ['default'];
+const versionFlag = argv.v || argv.version;
+const tasks = argv._;
+const toRun = tasks.length ? tasks : ['default'];
 
-var shouldLog = !argv.silent;
-if (!shouldLog) {
+if(argv.silent) {
   gutil.log = function() {};
 }
 
-cli.on('require', function(name) {
-  gutil.log('Requiring external module', chalk.magenta(name));
-});
-
-cli.on('requireFail', function(name) {
-  gutil.log(chalk.red('Failed to load external module'), chalk.magenta(name));
-});
-
-cli.on('respawn', function(flags, child) {
-  var nodeFlags = chalk.magenta(flags.join(', '));
-  var pid = chalk.magenta(child.pid);
-  gutil.log('Node flags detected:', nodeFlags);
-  gutil.log('Respawned to PID:', pid);
-});
-
-// The actual main logic that occurs upon a `pinion` command
-function handleArguments(env) {
-  if (versionFlag && tasks.length === 0) {
-    gutil.log('CLI version', cliPackage.version);
-    if (env.modulePackage && typeof env.modulePackage.version !== 'undefined') {
-      gutil.log('Local version', env.modulePackage.version);
-    }
-    process.exit(0);
+const printVersion = (env) => {
+  gutil.log('CLI version', cliPackage.version);
+  if(env.modulePackage && typeof env.modulePackage.version !== 'undefined') {
+    gutil.log('Local version', env.modulePackage.version);
   }
+};
 
-  if (!env.modulePath) {
+const ensurePinionRunnable = (env) => {
+  if(!env.modulePath) {
     gutil.log(
       chalk.red('Local pinion-pipeline not found in'),
       chalk.magenta(tildify(env.cwd))
@@ -71,38 +47,52 @@ function handleArguments(env) {
     process.exit(1);
   }
 
-  if (!env.configPath) {
+  if(!env.configPath) {
     gutil.log(chalk.red('No pinionfile found'));
     process.exit(1);
   }
+};
 
+const compareCliToLocalVersion = (env) => {
   // Check for semver difference between cli and local installation
-  if (semver.gt(cliPackage.version, env.modulePackage.version)) {
+  if(semver.gt(cliPackage.version, env.modulePackage.version)) {
     gutil.log(chalk.red('Warning: pinion-pipeline version mismatch:'));
     gutil.log(chalk.red('Global pinion-pipeline is', cliPackage.version));
     gutil.log(chalk.red('Local pinion-pipeline is', env.modulePackage.version));
   }
+};
 
-  // Chdir before requiring pinionfile to make sure
-  // we let them chdir as needed
-  if (process.cwd() !== env.cwd) {
+const setCwdToEnv = (env) => {
+  if(process.cwd() !== env.cwd) {
     process.chdir(env.cwd);
     gutil.log(
       'Working directory changed to',
       chalk.magenta(tildify(env.cwd))
     );
   }
+};
+
+// The actual main logic that occurs upon a `pinion` command
+const handleArguments = (env) => {
+  if(versionFlag && tasks.length === 0) {
+    printVersion(env);
+    process.exit(0);
+  }
+
+  ensurePinionRunnable(env);
+
+  compareCliToLocalVersion(env);
+
+  // Do this so pinion runs from the project directory, rather than from pinion
+  setCwdToEnv(env);
 
   // This is what actually loads up the pinionfile
   gutil.log('Using pinionfile', chalk.magenta(tildify(env.configPath)));
-  var pinionConfig = require(env.configPath);
+  const pinionConfig = require(env.configPath);
+  const pinionInst = require(env.modulePath);
 
-  var pinionInst = require(env.modulePath);
-
-  process.nextTick(function() {
-    pinionInst.start(toRun, pinionConfig);
-  });
-}
+  pinionInst.start(toRun, pinionConfig);
+};
 
 cli.launch({
   cwd: argv.cwd,

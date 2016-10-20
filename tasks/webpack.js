@@ -1,35 +1,36 @@
 'use strict';
 
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var webpack = require('webpack');
-var PassThrough = require('readable-stream/passthrough');
-var env = require('../lib/env');
-var logger = require('../lib/compileLogger');
-var cookTask = require('../lib/cookTask');
-var cookTaskConfig = require('../lib/cookTaskConfig');
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import webpack from 'webpack';
+import PassThrough from 'readable-stream/passthrough';
+import { isDevelopment, isProduction } from '../lib/env';
+import logger from '../lib/compileLogger';
+import cookTask from '../lib/cookTask';
+import cookTaskConfig from '../lib/cookTaskConfig';
+import wpBaseConfig from '../lib/webpackBaseConfig';
 
-var defaultTaskConfig = {
+const defaultTaskConfig = {
   src: 'javascripts',
   dest: '.',
   extensions: ['js']
 };
 
-module.exports = function(config) {
-  var rawTaskConfig = config.tasks.js;
+export default (config) => {
+  const rawTaskConfig = config.tasks.js;
   if(!rawTaskConfig) return;
 
-  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  const taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
 
-  var rawTask = function(watch) {
-    var wpconfig = require('../lib/webpackBaseConfig')(taskConfig, config.root);
+  const rawTask = (watch) => {
+    const wpconfig = wpBaseConfig(taskConfig, config.root);
 
-    if(env.isDevelopment()) {
+    if(isDevelopment()) {
       wpconfig.devtool = 'source-map';
       webpack.debug = true;
     }
 
-    if(env.isProduction()) {
+    if(isProduction()) {
       wpconfig.plugins.push(
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin(),
@@ -37,10 +38,10 @@ module.exports = function(config) {
       );
     }
 
-    var wpStream = new PassThrough();
+    const wpStream = new PassThrough();
 
-    var initialCompile = false;
-    var onCompile = function(err, stats) {
+    let initialCompile = false;
+    const onCompile = (err, stats) => {
       logger(err, stats);
 
       if(!initialCompile) {
@@ -52,9 +53,7 @@ module.exports = function(config) {
     if(watch) {
       gutil.log('Kicking off webpack in watch-mode');
 
-      var watchOptions = {
-        poll: true
-      };
+      const watchOptions = { poll: true };
 
       webpack(wpconfig).watch(watchOptions, onCompile);
     }
@@ -67,12 +66,14 @@ module.exports = function(config) {
     return wpStream;
   };
 
-  var cookWebpackTask = function(watch) {
-    return cookTask(rawTask.bind(rawTask, watch), config.root, taskConfig);
-  };
+  const cookWebpackTask = (watch) => cookTask(
+    () => rawTask(watch),
+    config.root,
+    taskConfig
+  );
 
   gulp.task('webpack', cookWebpackTask(false));
   gulp.task('webpack:watch', cookWebpackTask(true));
 };
 
-module.exports.defaultTaskConfig = defaultTaskConfig;
+export { defaultTaskConfig };
