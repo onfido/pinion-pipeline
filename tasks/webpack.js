@@ -3,40 +3,88 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var webpack = require('webpack');
+var objectAssign = require('object-assign');
 var PassThrough = require('readable-stream/passthrough');
 var env = require('../lib/env');
 var logger = require('../lib/compileLogger');
 var cookTask = require('../lib/cookTask');
 var cookTaskConfig = require('../lib/cookTaskConfig');
 
-var defaultTaskConfig = {
+// Webpack builds both JS and CSS, so needs default config for both of these tasks
+var defaultJsTaskConfig = {
   src: 'javascripts',
   dest: '.',
   extensions: ['js'],
   cssModules: true
 };
+var defaultCssTaskConfig = {
+  src: 'stylesheets',
+  dest: '.',
+  extensions: ['css', 'scss']
+};
+
+function addCssEntries(config) {
+  // CSS tasks did not use to specify entries, so we need to generate them to be
+  // backwards compatible. This also will allow us to glob webpack JS files, if
+  // we want to add it as a feature
+
+  var srcGlobless = config.src.split('*')[0];
+  var srcGlob = config.src.substr(srcGlobless.length);
+  config.src = srcGlobless;
+  config.entriesGlob = srcGlob || '**/*.{' + config.extensions.join(',') + '}';
+
+  return config;
+}
 
 module.exports = function(config) {
-  var rawTaskConfig = config.tasks.js;
-  if(!rawTaskConfig) return;
+  var rawJsTaskConfig = config.tasks.js;
+  var rawCssTaskConfig = config.tasks.css;
+  if(!rawJsTaskConfig && !rawCssTaskConfig) return;
 
-  var taskConfig = cookTaskConfig(rawTaskConfig, defaultTaskConfig);
+  var taskConfig = [];
+  if(rawJsTaskConfig) {
+    var jsTaskConfig = cookTaskConfig(rawJsTaskConfig, defaultJsTaskConfig);
+    taskConfig.push(jsTaskConfig);
+  }
+  if(rawCssTaskConfig) {
+    var cssTaskConfig = cookTaskConfig(rawCssTaskConfig, defaultCssTaskConfig);
+    taskConfig.push(cssTaskConfig);
+  }
+  taskConfig = cookTaskConfig(taskConfig);
 
-  var rawTask = function(watch) {
-    var wpconfig = require('../lib/webpackBaseConfig')(taskConfig, config.root);
+  var rawTask = function(watch, options) {
+    var wpBaseConfig = require('../lib/webpackBaseConfig');
+    var wpconfigArr = [];
+    options.config.taskArray.forEach(function(optionsTaskConfig) {
+      var optionsSrcArr = optionsTaskConfig.src || options.config.src;
+      if(!Array.isArray(optionsSrcArr)) {
+        optionsSrcArr = [optionsSrcArr];
+      }
+      optionsSrcArr.forEach(function(optionsSrc) {
+        var flattenedConfig = addCssEntries(objectAssign({},
+          options.config,
+          optionsTaskConfig,
+          {src: optionsSrc}
+        ));
 
-    if(env.isDevelopment()) {
-      wpconfig.devtool = 'source-map';
-      webpack.debug = true;
-    }
+        var wpconfig = wpBaseConfig(flattenedConfig, config.root);
 
-    if(env.isProduction()) {
-      wpconfig.plugins.push(
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin(),
-        new webpack.NoErrorsPlugin()
-      );
-    }
+        if(env.isDevelopment()) {
+          wpconfig.devtool = 'source-map';
+          webpack.debug = true;
+        }
+
+        if(env.isProduction()) {
+          wpconfig.plugins.push(
+            new webpack.optimize.DedupePlugin(),
+            new webpack.optimize.UglifyJsPlugin(),
+            new webpack.NoErrorsPlugin()
+          );
+        }
+
+        wpconfigArr.push(wpconfig);
+      });
+    });
 
     var wpStream = new PassThrough();
 
@@ -57,12 +105,12 @@ module.exports = function(config) {
         poll: true
       };
 
-      webpack(wpconfig).watch(watchOptions, onCompile);
+      webpack(wpconfigArr).watch(watchOptions, onCompile);
     }
     else {
       gutil.log('Kicking off webpack in build-mode');
 
-      webpack(wpconfig, onCompile);
+      webpack(wpconfigArr, onCompile);
     }
 
     return wpStream;
@@ -75,5 +123,3 @@ module.exports = function(config) {
   gulp.task('webpack', cookWebpackTask(false));
   gulp.task('webpack:watch', cookWebpackTask(true));
 };
-
-module.exports.defaultTaskConfig = defaultTaskConfig;

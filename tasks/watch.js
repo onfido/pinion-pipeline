@@ -13,7 +13,7 @@ var nonEmptyFilter = function(item) {
 };
 
 module.exports = function(config) {
-  var watchableTasks = ['fonts', 'images', 'svgSprite', 'resources', 'css'];
+  var watchableTasks = ['fonts', 'images', 'svgSprite', 'resources'];
 
   var watchTask = function() {
     var watchStreams = watchableTasks.map(function(taskName) {

@@ -12,9 +12,8 @@ module.exports = function(config) {
     'resources'
   ];
   var codeTasks = [
-    'css',
     {
-      configName: 'js',
+      configName: /(css|js)/,
       default: 'webpack',
       watch: 'webpack:watch'
     }
@@ -25,7 +24,16 @@ module.exports = function(config) {
   };
 
   var matchFilter = function(task) {
-    return config.tasks[(task && task.configName) || task];
+    var configNameMatcher = new RegExp((task && task.configName) || task);
+    var matches = Object.keys(config.tasks).filter(function(configName) {
+      return configNameMatcher.exec(configName);
+    });
+
+    return matches[0];
+  };
+
+  var duplicateFilter = function(task, i, taskArray) {
+    return taskArray.indexOf(task) === i;
   };
 
   var nonEmptyFilter = function(x) {
@@ -37,8 +45,8 @@ module.exports = function(config) {
 
     return function(cb) {
       var sequence = [
-        assetTasks.filter(matchFilter).map(applyVariant),
-        codeTasks.filter(matchFilter).map(applyVariant),
+        assetTasks.filter(matchFilter).filter(duplicateFilter).map(applyVariant),
+        codeTasks.filter(matchFilter).filter(duplicateFilter).map(applyVariant),
         cb
       ].filter(nonEmptyFilter);
 
