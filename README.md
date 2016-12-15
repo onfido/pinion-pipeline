@@ -84,12 +84,12 @@ module.exports = {
       src: 'stylesheets',
       dest: '.',
 
-      // options to pass to `gulp-autoprefixer`
+      // options to pass to `autoprefixer`
       autoprefixer: {
         browsers: ['last 3 version']
       },
 
-      // options to pass to `gulp-sass`
+      // options to pass to `node-sass`
       sass: {
         indentedSyntax: false
       },
@@ -153,8 +153,8 @@ Uses node-sass to compile SCSS code
 
 #### Options
 
- * `autoprefixer` - options passed to gulp-autoprefixer
- * `sass` - options passed to gulp-sass
+ * `autoprefixer` - options passed to autoprefixer
+ * `sass` - options passed to node-sass
 
 ### images
 
