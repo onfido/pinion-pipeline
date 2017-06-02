@@ -145,6 +145,7 @@ Uses webpack to compile Javascript code
  * `entries` - a map of built file names, to an array of source files. E.g. `{ bundle: ['./a.js', './b.js'] }` to create a bundle.js from an a.js and b.js
  * `globals` - a map of local npm packages to their aliases. E.g. `jquery: ['$', 'jQuery']`
  * `loaders` - config for webpack loaders to be concatted onto the default Pinion loaders. (Pinion will search your package's node_modules for any loader dependencies it can't find in its own)
+ * `plugins` - config for webpack plugins to be concatted onto the default Pinion plugins. (Pinion will search your package's node_modules for any plugin dependencies it can't find in its own)
  * `cssModules` - a boolean of whether you want to use CSS modules for CSS imports (excluding imports from node_modules)
  * `envVars` - a list of the environment variables that should be accessible in the built JS files with `process.env` (`NODE_ENV` is always exposed)
 
