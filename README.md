@@ -232,7 +232,7 @@ Runs through all of the build tasks
 
 `pinion rev` will revision all of your assets. Also known as "fingerprinting" in Rails.
 
-This adds a hash to the end of your files, unique to their content. This aids in cache-busting.
+This adds a hash to the end of your files, unique to their content. This aids in cache-busting (index.html files are not revisioned).
 
 A `rev-manifest.json` will be created with the mappings from the original file name, to the new file name.
 
