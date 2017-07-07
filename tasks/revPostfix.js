@@ -20,7 +20,7 @@ module.exports = function(config) {
       'g'
     );
 
-    return gulp.src(path.join(config.root.dest, '**/*.{css,js}'))
+    return gulp.src(path.join(config.root.dest, '**/*.{css,js,html}'))
       .pipe(debug({ title: 'rev-postfix-assets' }))
       .pipe(replace(searchRegex, '$1' + outputPrefix))
       .pipe(gulp.dest(config.root.dest));
